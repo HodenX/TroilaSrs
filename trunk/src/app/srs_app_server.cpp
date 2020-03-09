@@ -484,8 +484,8 @@ SrsServer::SrsServer()
     // for some global instance is not ready now,
     // new these objects in initialize instead.
     http_api_mux = new SrsHttpServeMux();
-    //http_server = new SrsHttpServer(this);
-    http_server = new TroilaSrsHttpServer(this);
+    http_server = new SrsHttpServer(this);
+    //http_server = new TroilaSrsHttpServer(this);
     http_heartbeat = new SrsHttpHeartbeat();
     ingester = new SrsIngester();
 }
@@ -757,6 +757,10 @@ srs_error_t SrsServer::http_handle()
 {
     srs_error_t err = srs_success;
     
+    // if ((err = http_api_mux->handle("/api/push2pexip/", new SrsGoPush2PexipUrlApi())) != srs_success) {
+    //     return srs_error_wrap(err, "handle /api/push2pexip/");
+    // }
+
     if ((err = http_api_mux->handle("/", new SrsHttpNotFoundHandler())) != srs_success) {
         return srs_error_wrap(err, "handle not found");
     }

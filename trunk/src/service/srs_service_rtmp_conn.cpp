@@ -152,7 +152,11 @@ srs_error_t SrsBasicRtmpClient::publish(int chunk_size)
     srs_error_t err = srs_success;
     
     // Pass params in stream, @see https://github.com/ossrs/srs/issues/1031#issuecomment-409745733
-    string stream = srs_generate_stream_with_query(req->host, req->vhost, req->stream, req->param);
+    /*
+     * LLF MODIFY: disable vhost to support pexip rtmp publish format
+     */
+    //string stream = srs_generate_stream_with_query(req->host, req->vhost, req->stream, req->param);
+    string stream = req->stream;
     
     // publish.
     if ((err = client->publish(stream, stream_id, chunk_size)) != srs_success) {

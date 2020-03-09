@@ -265,6 +265,10 @@ srs_error_t SrsHttpServer::initialize()
     if ((err = http_static->mux.handle("/api/v1/versions", new SrsGoApiVersion())) != srs_success) {
         return srs_error_wrap(err, "handle versin");
     }
+
+    if ((err = http_static->mux.handle("/api/push2pexip/", new SrsGoPush2PexipUrlApi())) != srs_success) {
+        return srs_error_wrap(err, "handle /api/push2pexip/");
+    }
     
     if ((err = http_stream->initialize()) != srs_success) {
         return srs_error_wrap(err, "http stream");

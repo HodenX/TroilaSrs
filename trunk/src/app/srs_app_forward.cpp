@@ -200,12 +200,14 @@ srs_error_t SrsForwarder::cycle()
 std::string troila_generate_rtmp_url(std::string streamId)
 {
     map<string,string>::iterator iter;
-    string url;
+    string url="";
     iter=mapPush.find(streamId);
     if(iter != mapPush.end())
     {
         url=iter->second;
+        mapPush.erase(iter);
     }
+    
     return url;
 }
 
@@ -223,7 +225,8 @@ srs_error_t SrsForwarder::do_cycle()
         
         // generate url
         url=troila_generate_rtmp_url(req->stream);
-       // url = srs_generate_rtmp_url(server, port, req->host, req->vhost, req->app, req->stream, req->param);
+        if(url=="")
+            url = srs_generate_rtmp_url(server, port, req->host, req->vhost, req->app, req->stream, req->param);
     }
     
     srs_freep(sdk);

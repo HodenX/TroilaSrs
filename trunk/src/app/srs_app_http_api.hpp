@@ -128,6 +128,17 @@ public:
     virtual srs_error_t serve_http(ISrsHttpResponseWriter* w, ISrsHttpMessage* r);
 };
 
+
+class SrsGoPush2PexipUrlApi : public ISrsHttpHandler
+{
+public:
+    SrsGoPush2PexipUrlApi();
+    virtual ~SrsGoPush2PexipUrlApi();
+public:
+    virtual srs_error_t serve_http(ISrsHttpResponseWriter* w, ISrsHttpMessage* r);
+};
+
+
 class SrsGoApiFeatures : public ISrsHttpHandler
 {
 public:

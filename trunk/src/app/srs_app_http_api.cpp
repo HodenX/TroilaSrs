@@ -1419,3 +1419,77 @@ srs_error_t SrsHttpApi::on_reload_http_api_crossdomain()
     return err;
 }
 
+SrsGoPush2PexipUrlApi::SrsGoPush2PexipUrlApi()
+{
+}
+
+SrsGoPush2PexipUrlApi::~SrsGoPush2PexipUrlApi()
+{
+}
+
+srs_error_t SrsGoPush2PexipUrlApi::serve_http(ISrsHttpResponseWriter* w, ISrsHttpMessage* r)
+{
+    std::string body;
+    srs_error_t err = srs_success;
+    SrsJsonAny* key=NULL;
+    std::string str_key;
+    SrsJsonAny* value=NULL;
+    std::string str_value;
+    std::string msg;
+    
+    if(r->is_http_post())
+    {
+        if(r->header()->content_type()=="application/json")
+        {
+            if((err = r->body_read_all(body)) == srs_success)
+            {
+                SrsJsonAny* any = NULL;
+                if ((any = SrsJsonAny::loads(body)) != NULL) 
+                {
+                    if(any->is_object())
+                    {
+                        SrsJsonObject* obj=any->to_object();
+                        key=obj->value_at(0);
+                        str_key=key->to_str();
+                        value=obj->value_at(2);
+                        str_value=value->to_str();
+                        mapPush.insert(make_pair(str_key,str_value));
+                        msg = "OK!";
+                        w->header();
+                        w->write((char*)msg.data(), (int)msg.length());
+                        return w->final_request();
+                    }
+                    else
+                    {
+                        msg = "Json Format error!";
+                        w->write((char*)msg.data(), (int)msg.length());
+                        return srs_success;         
+
+                    }
+                }
+                else
+                {
+                    msg = "Not a Json Format!";
+                    w->write((char*)msg.data(), (int)msg.length());
+                    return srs_success;
+                }
+            }
+            else
+            {
+                msg = "Parse Body error!";
+                w->write((char*)msg.data(), (int)msg.length());
+                return srs_success;
+            }
+        }
+        else
+        {
+            msg = "Header error! The content must be `application/json!`";
+            w->write((char*)msg.data(), (int)msg.length());
+            return srs_success;
+        }
+        
+    }
+    msg = "Method must be Post!";
+    w->write((char*)msg.data(), (int)msg.length());
+    return srs_success;
+}
