@@ -49,6 +49,7 @@ class SrsForwarder : public ISrsCoroutineHandler
 private:
     // The ep to forward, server[:port].
     std::string ep_forward;
+    std::string url;
     SrsRequest* req;
 private:
     SrsCoroutine* trd;
@@ -70,6 +71,8 @@ public:
 public:
     virtual srs_error_t on_publish();
     virtual void on_unpublish();
+    void set_url(std::string Pushurl){url=Pushurl;};
+    std::string get_url(){return url;};
     // Forward the audio packet.
     // @param shared_metadata, directly ptr, copy it if need to save it.
     virtual srs_error_t on_meta_data(SrsSharedPtrMessage* shared_metadata);

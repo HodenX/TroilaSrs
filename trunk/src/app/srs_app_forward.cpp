@@ -224,9 +224,10 @@ srs_error_t SrsForwarder::do_cycle()
         srs_parse_hostport(ep_forward, server, port);
         
         // generate url
-        url=troila_generate_rtmp_url(req->stream);
-        if(url=="")
-            url = srs_generate_rtmp_url(server, port, req->host, req->vhost, req->app, req->stream, req->param);
+        // url=troila_generate_rtmp_url(req->stream);
+        // if(url=="")
+        //     url = srs_generate_rtmp_url(server, port, req->host, req->vhost, req->app, req->stream, req->param);
+        url=get_url();
     }
     
     srs_freep(sdk);

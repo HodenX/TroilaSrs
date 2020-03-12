@@ -1462,11 +1462,13 @@ srs_error_t SrsOriginHub::on_reload_vhost_exec(string vhost)
 
 srs_error_t SrsOriginHub::create_forwarders()
 {
-    srs_error_t err = srs_success;
+     srs_error_t err = srs_success;
+#if 0
+
+    if (!_srs_config->get_forward_enabled(req->vhost)) {
+        return err;
+    }
     
-    // if (!_srs_config->get_forward_enabled(req->vhost)) {
-    //     return err;
-    // }
     
     SrsConfDirective* conf = _srs_config->get_forwards(req->vhost);
     for (int i = 0; conf && i < (int)conf->args.size(); i++) {
@@ -1488,8 +1490,31 @@ srs_error_t SrsOriginHub::create_forwarders()
                 req->vhost.c_str(), req->app.c_str(), req->stream.c_str(), forward_server.c_str());
         }
     }
-    
-    return err;
+#else
+
+    map<string,string>::iterator iter;
+    string url="";
+    iter=mapPush.find(req->stream);
+    if(iter != mapPush.end())
+    {
+        SrsForwarder* forwarder = new SrsForwarder(this);
+        forwarder->set_url(iter->second);
+        forwarders.push_back(forwarder);
+
+        if ((err = forwarder->initialize(req, "troilaForwarder")) != srs_success) {
+                return srs_error_wrap(err, "init forwarder");
+            }
+        srs_utime_t queue_size = _srs_config->get_queue_length(req->vhost);
+            forwarder->set_queue_size(queue_size);
+
+        if ((err = forwarder->on_publish()) != srs_success) {
+                return srs_error_wrap(err, "start forwarder failed, vhost=%s, app=%s, stream=%s, forward-to=%s",
+                    req->vhost.c_str(), req->app.c_str(), req->stream.c_str(), "troilaForwarder");
+            }
+       
+    }
+#endif  
+     return err;
 }
 
 void SrsOriginHub::destroy_forwarders()
